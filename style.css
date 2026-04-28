@@ -1,0 +1,161 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fff;
+    color: #000;
+    font-family: 'Azeret Mono', monospace;
+    overflow-x: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 60px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+}
+
+nav {
+    display: flex;
+    gap: 50px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+nav a::before {
+    content: '>';
+    margin-right: 4px;
+    visibility: hidden;
+}
+
+nav a::after {
+    content: '<';
+    margin-left: 4px;
+    visibility: hidden;
+}
+
+nav a:hover::before,
+nav a:hover::after {
+    visibility: visible;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Vertically centers the content-group */
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    padding: 100px 0; /* Some padding for header/footer safety */
+}
+
+.content-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 5;
+}
+
+.graphic-wrapper {
+    position: relative;
+    width: 85%;
+    max-width: 1260px;
+    margin-top: 10vh;
+    display: flex;
+    justify-content: center;
+}
+
+.main-graphic {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none; /* Let clicks pass to overlay-links */
+}
+
+.overlay-link {
+    position: absolute;
+    display: block;
+    z-index: 100;
+    cursor: pointer;
+}
+
+/* Custom Tooltip Styling */
+.overlay-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #000;
+    color: #fff;
+    padding: 8px 12px;
+    font-family: 'Azeret Mono', monospace;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #333;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.overlay-link:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Subtly show hitbox on hover for UX feedback (optional, can be removed) */
+.overlay-link:hover {
+    background: rgba(0, 102, 255, 0.05);
+}
+
+.scroll-indicator {
+    position: absolute; /* Place at the very bottom of the relative container */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 3;
+}
+
+.scroll-line {
+    width: 4px; /* Thicker */
+    height: 40px; /* Shorter */
+    background: linear-gradient(to bottom, rgba(180,180,180,0) 0%, #a0a0a0 100%); /* Gradient on arrow */
+}
+
+.scroll-arrow {
+    width: 16px;
+    height: 16px;
+    border-bottom: 4px solid #a0a0a0; /* Thicker */
+    border-right: 4px solid #a0a0a0; /* Thicker */
+    transform: rotate(45deg);
+    margin-top: -4px;
+}
