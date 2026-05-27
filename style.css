@@ -159,3 +159,47 @@ nav a:hover::after {
     transform: rotate(45deg);
     margin-top: -4px;
 }
+
+@media (max-width: 768px) {
+    header {
+        position: static;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 24px 20px;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        letter-spacing: -0.5px;
+    }
+
+    nav {
+        width: 100%;
+        gap: 14px 18px;
+        flex-wrap: wrap;
+    }
+
+    nav a {
+        font-size: 0.95rem;
+    }
+
+    .main-content {
+        min-height: auto;
+        justify-content: flex-start;
+        padding: 24px 0 64px;
+    }
+
+    .graphic-wrapper {
+        width: 100%;
+        max-width: none;
+        margin-top: 0;
+        padding: 0 10px;
+    }
+
+    .scroll-indicator {
+        position: static;
+        transform: none;
+        margin-top: 24px;
+    }
+}
