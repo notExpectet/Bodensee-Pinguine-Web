@@ -5,229 +5,80 @@
 }
 
 body {
-    background-color: #fff;
-    color: #000;
-    font-family: 'Azeret Mono', monospace;
-    overflow-x: hidden;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 40px 60px;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-}
-
-.logo {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 2.8rem;
-    letter-spacing: -1px;
-}
-
-nav {
-    display: flex;
-    gap: 50px;
-}
-
-nav a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 500;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.pinguin-item {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.pinguin-gif {
-    width: 72px;
-    height: 72px;
-    margin-top: 8px;
-    animation: spin 4s linear infinite;
-}
-
-nav a::before {
-    content: '>';
-    margin-right: 4px;
-    visibility: hidden;
-}
-
-nav a::after {
-    content: '<';
-    margin-left: 4px;
-    visibility: hidden;
-}
-
-nav a:hover::before,
-nav a:hover::after {
-    visibility: visible;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.main-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* Vertically centers the content-group */
-    width: 100%;
     min-height: 100vh;
-    position: relative;
-    padding: 100px 0; /* Some padding for header/footer safety */
+    background: #ffffff;
+    color: #2a2f3a;
+    font-family: 'Inter', sans-serif;
 }
 
-.content-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 5;
+.maintenance-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
 }
 
-.graphic-wrapper {
-    position: relative;
-    width: 85%;
-    max-width: 1260px;
-    margin-top: 10vh;
-    display: flex;
-    justify-content: center;
+.maintenance-card {
+    width: min(90vw, 640px);
+    text-align: center;
+    background: #f8faff;
+    border: 1px solid #e9effa;
+    border-radius: 24px;
+    padding: 36px 28px;
+    box-shadow: 0 14px 40px rgba(77, 100, 142, 0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.main-graphic {
-    width: 100%;
-    height: auto;
-    display: block;
-    pointer-events: none; /* Let clicks pass to overlay-links */
+.maintenance-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(77, 100, 142, 0.18);
 }
 
-.overlay-link {
-    position: absolute;
-    display: block;
-    z-index: 100;
-    cursor: pointer;
+h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #1f2937;
+    text-shadow: 0 2px 14px rgba(100, 116, 139, 0.18);
+    transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
-/* Custom Tooltip Styling */
-.overlay-link::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: #000;
-    color: #fff;
-    padding: 8px 12px;
-    font-family: 'Azeret Mono', monospace;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s ease-in-out;
-    border: 1px solid #333;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+h1:hover {
+    color: #334155;
+    text-shadow: 0 4px 18px rgba(100, 116, 139, 0.24);
 }
 
-.overlay-link:hover::after {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+p {
+    margin-top: 12px;
+    color: #5b6678;
+    font-size: clamp(1rem, 2.1vw, 1.15rem);
 }
 
-/* Subtly show hitbox on hover for UX feedback (optional, can be removed) */
-.overlay-link:hover {
-    background: rgba(0, 102, 255, 0.05);
+.gif-wrap {
+    margin-top: 24px;
 }
 
-.scroll-indicator {
-    position: absolute; /* Place at the very bottom of the relative container */
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 3;
+.giphy-embed {
+    width: min(100%, 260px);
+    height: 260px;
+    border: 0;
+    border-radius: 18px;
+    box-shadow: 0 10px 26px rgba(77, 100, 142, 0.18);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.scroll-line {
-    width: 4px; /* Thicker */
-    height: 40px; /* Shorter */
-    background: linear-gradient(to bottom, rgba(180,180,180,0) 0%, #a0a0a0 100%); /* Gradient on arrow */
+.giphy-embed:hover {
+    transform: scale(1.02);
+    box-shadow: 0 14px 30px rgba(77, 100, 142, 0.24);
 }
 
-.scroll-arrow {
-    width: 16px;
-    height: 16px;
-    border-bottom: 4px solid #a0a0a0; /* Thicker */
-    border-right: 4px solid #a0a0a0; /* Thicker */
-    transform: rotate(45deg);
-    margin-top: -4px;
+a {
+    color: #6b7da2;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-@media (max-width: 768px) {
-    header {
-        position: static;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 24px 20px;
-    }
-
-    .logo {
-        font-size: 1.8rem;
-        letter-spacing: -0.5px;
-    }
-
-    nav {
-        width: 100%;
-        gap: 14px 18px;
-        flex-wrap: wrap;
-        align-items: flex-start;
-    }
-
-    nav a {
-        font-size: 0.95rem;
-    }
-
-    .pinguin-gif {
-        width: 56px;
-        height: 56px;
-    }
-
-    .main-content {
-        min-height: auto;
-        justify-content: flex-start;
-        padding: 24px 0 64px;
-    }
-
-    .graphic-wrapper {
-        width: 100%;
-        max-width: none;
-        margin-top: 0;
-        padding: 0 10px;
-    }
-
-    .scroll-indicator {
-        position: static;
-        transform: none;
-        margin-top: 24px;
-    }
+a:hover {
+    color: #4e628f;
+    text-decoration: underline;
 }
