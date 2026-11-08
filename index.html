@@ -114,6 +114,27 @@ dl.facts dt { color: var(--muted); }
 dl.facts dd { margin: 0; }
 @media (max-width: 720px) { .cards { grid-template-columns: minmax(0, 1fr); } .card { padding: 28px; } }
 
+/* Anmelden */
+nav.top ul a.nav-login { color: var(--accent); opacity: 1; }
+dialog.login { border: 0; padding: 0; border-radius: 20px; width: min(360px, calc(100vw - 32px)); background: var(--bg); color: var(--ink); box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+dialog.login::backdrop { background: rgba(0,0,0,0.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+dialog.login[open] { animation: pop .22s ease; }
+@keyframes pop { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+.login form { display: flex; flex-direction: column; gap: 14px; padding: 28px; }
+.login h2 { font-size: 24px; font-weight: 700; }
+.login p { margin: 0; color: var(--muted); font-size: 15px; }
+.login input { font: inherit; font-size: 17px; height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.login input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,113,227,0.15); }
+.login .err { color: #d70015; font-size: 14px; }
+.login.shake form { animation: shake .35s ease; }
+@keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.login-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.login-actions button { font: inherit; font-size: 15px; border: 0; border-radius: 980px; padding: 10px 20px; cursor: pointer; }
+.login-actions .pri { background: var(--accent); color: #fff; }
+.login-actions .sec { background: var(--tint); color: var(--ink); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { dialog.login[open], .login.shake form { animation: none; } }
+
 footer { padding-block: 32px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
 footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 </style>
@@ -124,10 +145,11 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
   <div class="wrap">
     <a class="brand" href="#team">Bodensee Pinguine</a>
     <ul>
-      <li><a href="#team">Team</a></li>
+      <li class="hide-s"><a href="#team">Team</a></li>
       <li><a href="#roboter">Roboter</a></li>
       <li class="hide-s"><a href="#galerie">Galerie</a></li>
       <li><a href="#kontakt">Kontakt</a></li>
+      <li><a href="#anmelden" id="nav-login" class="nav-login">Anmelden</a></li>
     </ul>
   </div>
 </nav>
@@ -244,11 +266,59 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
   </div>
 </footer>
 
+<dialog class="login" id="login" aria-labelledby="login-title">
+  <form id="login-form" novalidate>
+    <h2 id="login-title">Anmelden</h2>
+    <p>Interner Bereich für das Team.</p>
+    <label class="sr" for="login-pw">Passwort</label>
+    <input id="login-pw" type="password" placeholder="Passwort" autocomplete="current-password">
+    <p class="err" id="login-err" hidden>Falsches Passwort. Versuch es noch einmal.</p>
+    <div class="login-actions">
+      <button type="button" class="sec" id="login-cancel">Abbrechen</button>
+      <button type="submit" class="pri">Weiter</button>
+    </div>
+  </form>
+</dialog>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
 <script>
 (function () {
+  /* ---------- Anmelden ----------
+     Ziel nach erfolgreicher Anmeldung. Für die Subdomain z.B. 'https://taktik.bopi.team/' eintragen. */
+  var LOGIN_TARGET = '/taktik/';
+  var PW_HASH = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // SHA-256 des Passworts
+  var dlg = document.getElementById('login'), pw = document.getElementById('login-pw'), err = document.getElementById('login-err');
+  function openLogin(e) {
+    if (e) e.preventDefault();
+    err.hidden = true; pw.value = '';
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    setTimeout(function () { pw.focus(); }, 30);
+  }
+  function closeLogin() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); if (location.hash === '#anmelden') history.replaceState(null, '', location.pathname); }
+  document.getElementById('nav-login').addEventListener('click', openLogin);
+  document.getElementById('login-cancel').addEventListener('click', closeLogin);
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) closeLogin(); });
+  function sha256(text) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    });
+  }
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    sha256(pw.value).then(function (h) {
+      if (h === PW_HASH) {
+        try { sessionStorage.setItem('bopi-auth', '1'); } catch (_) {}
+        location.href = LOGIN_TARGET;
+      } else {
+        err.hidden = false; pw.select();
+        dlg.classList.remove('shake'); void dlg.offsetWidth; dlg.classList.add('shake');
+      }
+    });
+  });
+  if (location.hash === '#anmelden') openLogin();
+
   /* ---------- Kopieren ---------- */
   var copyBtn = document.getElementById('copy-mail');
   copyBtn.addEventListener('click', function () {
