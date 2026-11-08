@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /taktik/
 
 Sitemap: https://bopi.team/sitemap.xml
