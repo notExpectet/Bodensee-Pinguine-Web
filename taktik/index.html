@@ -493,7 +493,7 @@ setup() läuft einmal nach Anstoß, loop() alle N ms
         <li>Ball-Fangzone: Der Ball darf höchstens 3 cm in die konvexe Hülle des Roboters eindringen. Der Ball darf nicht festgehalten werden.</li>
         <li>Roboter: Durchmesser höchstens 22 cm.</li>
       </ul>
-      <p class="note warn">Das Regelwerk 2026 (robocup-junior.github.io) war von hier aus nicht erreichbar. Die Regeln oben sind nach den RCJ Soccer Entry Regeln zusammengefasst. Zahlen wie Halbzeitlänge, Fangzonen-Tiefe und Ballgröße bitte im offiziellen Dokument prüfen. Laut Ballspezifikation nutzen die Entry-Ligen den großen IR-Ball (74 mm); hier ist 47 mm voreingestellt.</p>
+      <p class="note warn">Das Regelwerk 2026 (robocup-junior.github.io) war von hier aus nicht erreichbar. Die Regeln oben sind nach den RCJ Soccer Entry Regeln zusammengefasst. Zahlen wie Halbzeitlänge, Fangzonen-Tiefe und Ballgröße bitte im offiziellen Dokument prüfen. Laut Ballspezifikation nutzen die Entry-Ligen den großen IR-Ball (74 mm); hier ist 74 mm voreingestellt.</p>
       <div class="check" id="capture"></div>
       <div class="row">
         <button class="btn sm" id="dmgB">Blau herausnehmen</button>
@@ -510,7 +510,7 @@ setup() läuft einmal nach Anstoß, loop() alle N ms
       </div>
       <h3>Ball</h3>
       <div class="form">
-        <label for="pBall">Durchmesser</label><select id="pBall"><option value="4.7">47 mm</option><option value="7.4">74 mm</option></select>
+        <label for="pBall">Durchmesser</label><select id="pBall"><option value="7.4">74 mm</option><option value="4.7">47 mm</option></select>
         <label for="pBm">Masse (g)</label><input type="number" id="pBm" min="20" max="200" step="1">
         <label for="pCrr">Rollwiderstand c<sub>rr</sub></label><input type="number" id="pCrr" min="0.005" max="0.2" step="0.005">
         <label for="pMuB">Gleitreibung Ball µ</label><input type="number" id="pMuB" min="0.05" max="1" step="0.05">
@@ -566,10 +566,10 @@ const P = {
   wheelR: 8, irR: 9, usR: 10,
   // Masse in kg, Längen in cm, Kräfte in kg·cm/s² (100 = 1 N)
   robotMass: 1.1, robotIk: 0.4, vmax: 250, Fstall: 1000, muWheel: 0.7, crrRobot: 0.02, muWall: 0.3, muRobot: 0.4,
-  ballD: 4.7, ballMass: 0.045, crr: 0.03, muSlide: 0.2, ballIk: 0.4,
+  ballD: 7.4, ballMass: 0.045, crr: 0.03, muSlide: 0.2, ballIk: 0.4,
   eWallBall: 0.55, eRobotBall: 0.35, eRobotRobot: 0.2, eRobotWall: 0.1, muBall: 0.15,
   loopMs: 10, usMs: 30, irNoise: 6,
-  halfMin: 10, lopSec: 8, lopOn: true, damageSec: 60
+  halfMin: 10, lopSec: 4, lopOn: true, damageSec: 60
 };
 const MOTOR_DEG = [60, 180, 300];
 const US_DEG = [0, 90, 180, 270];
@@ -3289,7 +3289,7 @@ function scriptInfo(src) {
   const hdr = /^\/\/ Skript: (.+?) · v([\d.]+)/.exec(src);
   return hdr ? { name: hdr[1], v: hdr[2], mod: true } : { name: 'Eigener Code', v: '', mod: true };
 }
-const DEFAULTS = [LIB_BUILTIN[0].code, LIB_BUILTIN[4].code];
+const DEFAULTS = [LIB_BUILTIN[0].code, LIB_BUILTIN[3].code];
 const CODE_KEY = { blue: 'rcj-code-v2-blue', yellow: 'rcj-code-v5-yellow' };
 const DRAFT_KEY = { blue: 'rcj-draft-blue', yellow: 'rcj-draft-yellow' };
 const TEAM = ['Blau', 'Gelb'];
@@ -3302,7 +3302,7 @@ robots.forEach((R, i) => {
   // gespeicherter unveränderter Standard ohne Kopfzeile -> Bibliotheksversion
   if (st && st === DEFAULTS[i].slice(DEFAULTS[i].indexOf('\n') + 1)) st = null;
   // unveränderte ältere Gelb-Standardversion -> neue Version
-  if (st && i === 1 && (st === LIB_BUILTIN[2].code || st === LIB_BUILTIN[3].code || st === DEFAULT_YELLOW)) st = null;
+  if (st && i === 1 && (st === LIB_BUILTIN[2].code || st === LIB_BUILTIN[4].code || st === DEFAULT_YELLOW)) st = null;
   R.src = st || DEFAULTS[i];
 });
 
