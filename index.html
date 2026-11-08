@@ -1,26 +1,557 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wartung | Bodensee Pinguine</title>
-    <link rel="icon" href="/favicon.png" type="image/png">
-    <meta name="description" content="Die Website befindet sich derzeit in Wartung.">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bodensee Pinguine</title>
+<meta name="description" content="Roboter-AG Bodensee Pinguine: unser Team, unser Fußballroboter in 3D, Fotos und Kontakt.">
+<link rel="icon" href="/favicon.png" type="image/png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: ruhige, weiße Apple-artige Bänder (weiß / hellgrau im Wechsel), zentrierte Spalte max. 1080px, viel Weißraum */
+:root {
+  --bg: #ffffff;
+  --tint: #f5f5f7;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #d2d2d7;
+  --accent: #0071e3;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+section { padding-block: 96px; }
+section.tint { background: var(--tint); }
+.h-xl { font-size: clamp(40px, 7vw, 72px); font-weight: 700; line-height: 1.05; }
+.h-l { font-size: clamp(32px, 5vw, 48px); font-weight: 700; line-height: 1.08; }
+.center { text-align: center; }
+
+/* Navigation */
+nav.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: rgba(255,255,255,0.8); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); }
+nav.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 48px; gap: 16px; }
+.brand { font-weight: 600; font-size: 15px; color: var(--ink); white-space: nowrap; }
+.brand:hover { text-decoration: none; }
+nav.top ul { display: flex; gap: 24px; list-style: none; margin: 0; padding: 0; font-size: 13px; }
+nav.top ul a { color: var(--ink); opacity: 0.8; }
+nav.top ul a:hover { opacity: 1; text-decoration: none; }
+@media (max-width: 560px) { nav.top ul { gap: 14px; } nav.top ul li.hide-s { display: none; } }
+
+/* Team */
+#team { padding-block: 32px 64px; }
+.team-card { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; gap: 40px; background: var(--tint); border-radius: 24px; padding: 20px 40px 20px 20px; }
+.photo { margin: 0; aspect-ratio: 3 / 2; max-width: 100%; width: 100%; border-radius: 16px; overflow: hidden; background: var(--line); display: grid; place-items: center; }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.placeholder { display: grid; justify-items: center; gap: 10px; color: var(--muted); font-size: 15px; text-align: center; padding: 16px; }
+.placeholder svg { width: 44px; height: 44px; stroke: var(--muted); }
+.members { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 16px; }
+.members li { display: flex; flex-direction: column; padding-top: 16px; border-top: 1px solid var(--line); }
+.members .name { font-size: 19px; font-weight: 600; }
+.members .role { font-size: 15px; color: var(--muted); }
+@media (max-width: 760px) {
+  .team-card { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 12px 12px 24px; }
+  .team-text { padding-inline: 8px; }
+  .members { margin-top: 16px; gap: 12px; }
+  .members li { padding-top: 12px; }
+}
+
+/* Roboter: Sticky-Bühne, Scrollen zerlegt das Modell */
+.scrolly { height: 260vh; height: 260svh; position: relative; margin-top: 40px; }
+.sticky { position: sticky; top: calc(48px + env(safe-area-inset-top, 0px)); height: calc(100vh - 48px); height: calc(100svh - 48px - env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; }
+.viewer { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 24px; align-items: center; padding-block: 8px; }
+.stage { position: relative; height: 100%; min-height: 0; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: pan-y; outline: none; }
+.stage canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); border-radius: 20px; }
+.stage canvas.dragging { cursor: grabbing; }
+.stage canvas.hover { cursor: pointer; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 15px; pointer-events: none; transition: opacity .5s ease; }
+.hover-tag { position: absolute; left: 0; top: 0; pointer-events: none; font-size: 13px; font-weight: 600; color: var(--ink); background: rgba(255,255,255,0.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 6px 12px; border-radius: 980px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); white-space: nowrap; opacity: 0; transform: translate(-50%, -150%) scale(.96); transition: opacity .2s ease, transform .2s ease; }
+.hover-tag.show { opacity: 1; transform: translate(-50%, -170%) scale(1); }
+.info { min-height: 0; }
+.info h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; letter-spacing: -0.02em; }
+.info p.text { margin: 12px 0 0; color: var(--muted); font-size: 17px; max-width: 38ch; }
+.info .swap { transition: opacity .25s ease, transform .25s ease; }
+.info .swap.out { opacity: 0; transform: translateY(6px); }
+.info .hint { margin: 24px 0 0; font-size: 13px; color: var(--muted); }
+.progress { display: flex; align-items: center; justify-content: center; gap: 12px; padding-block: 0 20px; font-size: 12px; color: var(--muted); }
+.progress .track { display: block; width: 120px; height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress .fill { display: block; height: 100%; width: 100%; background: var(--ink); transform-origin: left; transform: scaleX(0); }
+@media (max-width: 860px) {
+  .viewer { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; align-items: stretch; }
+  .info { padding-bottom: 4px; }
+  .info p.text { font-size: 15px; margin-top: 6px; }
+  .info h3 { font-size: 22px; }
+  .info .hint { display: none; }
+}
+
+/* Galerie + GitHub */
+.gallery { margin-top: 48px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.gallery .tile { aspect-ratio: 1 / 1; max-width: 100%; border-radius: 16px; background: var(--tint); display: grid; place-items: center; overflow: hidden; color: var(--muted); font-size: 13px; }
+.gallery .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery .tile.wide { grid-column: span 2; aspect-ratio: auto; }
+@media (max-width: 560px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gallery .tile.wide { grid-column: span 2; aspect-ratio: 2 / 1; } }
+.cta-row { margin-top: 32px; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; font-size: 19px; }
+.cta-row a::after { content: " ›"; }
+
+.cards { margin-top: 48px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.card { background: var(--bg); border-radius: 20px; padding: 36px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card h3 { font-size: 28px; font-weight: 700; }
+.card p { margin: 0; color: var(--muted); }
+.card .big { font-size: 19px; font-weight: 600; color: var(--ink); word-break: break-word; }
+.card .actions { margin-top: auto; padding-top: 12px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.copy { font: inherit; font-size: 15px; background: none; border: 0; color: var(--accent); padding: 0; cursor: pointer; }
+.gh-icon { width: 40px; height: 40px; fill: var(--ink); }
+dl.facts { margin: 4px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 16px; font-size: 15px; }
+dl.facts dt { color: var(--muted); }
+dl.facts dd { margin: 0; }
+@media (max-width: 720px) { .cards { grid-template-columns: minmax(0, 1fr); } .card { padding: 28px; } }
+
+footer { padding-block: 32px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
 </head>
 <body>
-    <main class="maintenance-page">
-        <div class="maintenance-card">
-            <h1>Website in Wartung</h1>
-            <p>Wir arbeiten gerade an einem Update und sind bald wieder für euch da.</p>
-            <div class="gif-wrap">
-                <iframe src="https://giphy.com/embed/Mah9dFWo1WZX0WM62Q" width="240" height="240" frameborder="0" class="giphy-embed" allowfullscreen title="Pinguin baut"></iframe>
-                <p><a href="https://giphy.com/gifs/pudgypenguins-building-build-brick-Mah9dFWo1WZX0WM62Q" target="_blank" rel="noopener noreferrer">via GIPHY</a></p>
-            </div>
+
+<nav class="top" aria-label="Hauptnavigation">
+  <div class="wrap">
+    <a class="brand" href="#team">Bodensee Pinguine</a>
+    <ul>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#roboter">Roboter</a></li>
+      <li class="hide-s"><a href="#galerie">Galerie</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============ TEAM ============ -->
+<section id="team">
+  <div class="wrap">
+    <div class="team-card">
+      <figure class="photo">
+        <!-- TEAMFOTO: Ersetze den Platzhalter durch z.B. <img src="bilder/team.jpg" alt="Das Team der Bodensee Pinguine"> -->
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8.5 5l1.5-2h4l1.5 2"/></svg>
+          <span>Teamfoto folgt</span>
         </div>
-    </main>
+      </figure>
+      <div class="team-text">
+        <h1 class="h-l">Bodensee Pinguine</h1>
+        <!-- NAMEN: Reihenfolge wie auf dem Foto, von links nach rechts -->
+        <ul class="members">
+          <li><span class="name">Vorname Nachname</span><span class="role">Konstruktion</span></li>
+          <li><span class="name">Vorname Nachname</span><span class="role">Programmierung</span></li>
+          <li><span class="name">Vorname Nachname</span><span class="role">Elektronik</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROBOTER ============ -->
+<section id="roboter" class="tint" style="padding-bottom:48px">
+  <div class="wrap">
+    <div class="center">
+      <h2 class="h-l">Unser Roboter</h2>
+    </div>
+  </div>
+  <div class="scrolly" id="scrolly">
+    <div class="sticky">
+      <div class="wrap viewer">
+        <div class="stage" id="stage">
+          <canvas id="robot-canvas" tabindex="0" aria-label="3D-Modell unseres Fußballroboters. Ziehen zum Drehen, Tippen auf ein Bauteil für Details, Pfeiltasten wechseln das Bauteil."></canvas>
+          <div class="loading" id="loading">Modell wird geladen …</div>
+          <div class="hover-tag" id="hover-tag"></div>
+        </div>
+        <div class="info" aria-live="polite">
+          <div class="swap" id="info-swap">
+            <h3 id="info-title">Elf Baugruppen</h3>
+            <p class="text" id="info-text">Komplett selbst konstruiert und 3D-gedruckt. Scrolle, um ihn zu zerlegen, und tippe auf ein Teil für Details.</p>
+          </div>
+          <p class="hint">Ziehen zum Drehen · Klick ins Leere zum Abwählen</p>
+        </div>
+      </div>
+      <div class="progress" aria-hidden="true"><span>Zusammengebaut</span><span class="track"><span class="fill" id="progress-fill"></span></span><span>Zerlegt</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALERIE ============ -->
+<section id="galerie">
+  <div class="wrap">
+    <div class="center">
+      <h2 class="h-l">Galerie</h2>
+    </div>
+    <!-- FOTOS: Ersetze die Kacheln durch <div class="tile"><img src="bilder/foto1.jpg" alt="..."></div> -->
+    <div class="gallery">
+      <div class="tile wide">Foto</div>
+      <div class="tile">Foto</div>
+      <div class="tile">Foto</div>
+      <div class="tile">Foto</div>
+      <div class="tile">Foto</div>
+    </div>
+    <div class="cta-row">
+      <a href="#" target="_blank" rel="noopener">Ganze Fotogalerie ansehen</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GITHUB + KONTAKT ============ -->
+<section id="kontakt" class="tint">
+  <div class="wrap">
+    <div class="center">
+      <h2 class="h-l">Kontakt</h2>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <h3>Unser Code ist offen.</h3>
+        <p>Alle Programme, mit denen unser Roboter fährt, liegen auf GitHub. Schau rein, lerne mit oder schlag Verbesserungen vor.</p>
+        <div class="actions">
+          <!-- GITHUB: Link anpassen -->
+          <a href="https://github.com/" target="_blank" rel="noopener">github.com/bodensee-pinguine ›</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Schreib uns.</h3>
+        <!-- KONTAKT: Daten anpassen -->
+        <div class="big" id="mail">mail@bopi.team</div>
+        <dl class="facts">
+          <dt>Schule</dt><dd>Name der Schule, Straße 1, 88000 Ort</dd>
+        </dl>
+        <div class="actions">
+          <a href="mailto:mail@bopi.team">E-Mail schreiben ›</a>
+          <button class="copy" id="copy-mail" type="button">Adresse kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Roboter-AG Bodensee Pinguine</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script>
+(function () {
+  /* ---------- Kopieren ---------- */
+  var copyBtn = document.getElementById('copy-mail');
+  copyBtn.addEventListener('click', function () {
+    var text = document.getElementById('mail').textContent.trim();
+    var done = function () { copyBtn.textContent = 'Kopiert'; setTimeout(function () { copyBtn.textContent = 'Adresse kopieren'; }, 1800); };
+    var fallback = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  /* ---------- Baugruppen ----------
+     match: Teil des Objektnamens im GLB (Reihenfolge zählt, erster Treffer gewinnt)
+     up: Versatz nach oben in der Explosionsansicht (cm), out: nach außen (cm), off: freier Versatz [x,y,z] */
+  var PARTS = [
+    { id: 'ultra', match: /ultraschall/, name: 'Ultraschallsensoren', tag: 'Sensoren', up: 11, out: 4,
+      text: 'Vier Sensoren schauen nach vorne, hinten, links und rechts und messen den Abstand zu den Spielfeldwänden. Daraus berechnet der Roboter, wo auf dem Feld er gerade steht.' },
+    { id: 'ir', match: /ir_?platine/, name: 'IR-Ballsensor', tag: 'Sensor', up: 3,
+      text: 'Der Ball sendet Infrarotlicht aus. Die Sensoren auf dieser Platine messen, aus welcher Richtung es am stärksten kommt. So weiß der Roboter jederzeit, wo der Ball liegt.' },
+    { id: 'main', match: /mainboard/, name: 'Mainboard', tag: 'Gehirn', up: 16,
+      text: 'Hier läuft unser Programm. Der Mikrocontroller wertet viele Male pro Sekunde alle Sensoren aus und berechnet, wie schnell sich jeder Motor drehen muss.' },
+    { id: 'deck', match: /akkuwanne|rohr_unten|e2_deck/, name: 'Zwischenebene', tag: 'Struktur', up: 7,
+      text: 'Die zweite Ebene trägt Akku, Ultraschallsensoren und Mainboard. Abstandshalter lassen darunter Platz für die IR-Platine.' },
+    { id: 'akku', match: /akku/, name: 'Akku', tag: 'Energie', up: 7, off: [-14, 0, 0],
+      text: 'Liefert die Energie für Motoren und Elektronik. Er liegt in einer eigenen Wanne genau in der Mitte, damit der Schwerpunkt tief und zentral bleibt.' },
+    { id: 'henkel', match: /henkel/, name: 'Tragegriff', tag: 'Regelwerk', up: 21,
+      text: 'Laut Regelwerk muss man den Roboter jederzeit schnell vom Spielfeld heben können. Dafür sitzt oben der Griff.' },
+    { id: 'rods', match: /gewindestange|mutter|scheibe/, name: 'Gewindestangen', tag: 'Verbindung', up: 30,
+      text: 'Vier Messing-Gewindestangen mit Muttern halten alle Ebenen zusammen. Der Aufbau ist stabil und lässt sich zum Reparieren trotzdem schnell öffnen.' },
+    { id: 'wheels', match: /rad_nabe|rad_rollen/, name: 'Omni-Räder', tag: 'Fahrwerk', out: 7,
+      text: 'Auf jedem Rad sitzen kleine Rollen quer zur Laufrichtung. Dadurch fährt der Roboter in jede Richtung, auch seitwärts, ohne sich vorher zu drehen.' },
+    { id: 'motors', match: /getriebe|welle|motor_/, name: 'Motoren & Getriebe', tag: 'Antrieb', out: 3,
+      text: 'Drei Motoren im Abstand von 120 Grad treiben je ein Rad an. Das Getriebe macht aus schneller Drehung mehr Kraft. Durch Mischen der drei Geschwindigkeiten fährt der Roboter in jede Richtung.' },
+    { id: 'mulde', match: /ballmulde/, name: 'Ballmulde', tag: 'Ballführung', out: 5,
+      text: 'Die Aussparung vorne führt den Ball. So bleibt er beim Dribbeln vor dem Roboter und rollt nicht einfach weg.' },
+    { id: 'frame', match: /./, name: 'Unterbau', tag: 'Struktur', up: 0,
+      text: 'Bodenplatte, Rahmen, Seitenwände und Motorhalter, alles selbst konstruiert und 3D-gedruckt. Hier sind die Motoren verschraubt.' }
+  ];
+  var byId = {}; PARTS.forEach(function (p) { byId[p.id] = p; });
+  var ORDER = ['main', 'ir', 'ultra', 'akku', 'motors', 'wheels', 'mulde', 'frame', 'deck', 'rods', 'henkel'];
+
+  var swap = document.getElementById('info-swap');
+  var infoTitle = document.getElementById('info-title'), infoText = document.getElementById('info-text');
+  var defaults = { name: infoTitle.textContent, text: infoText.textContent };
+  var swapTimer;
+  function showInfo(p) {
+    p = p || defaults;
+    clearTimeout(swapTimer);
+    swap.classList.add('out');
+    swapTimer = setTimeout(function () {
+      infoTitle.textContent = p.name; infoText.textContent = p.text;
+      swap.classList.remove('out');
+    }, 180);
+  }
+
+  var loadingEl = document.getElementById('loading');
+  if (typeof THREE === 'undefined' || !THREE.GLTFLoader) { loadingEl.textContent = '3D-Ansicht konnte nicht geladen werden.'; return; }
+
+  /* ---------- Szene ---------- */
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvas = document.getElementById('robot-canvas');
+  var stage = document.getElementById('stage');
+  var tagEl = document.getElementById('hover-tag');
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+  renderer.setClearColor(0x000000, 0);
+
+  var scene = new THREE.Scene();
+  if (THREE.RoomEnvironment) {
+    var pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+  }
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xbfc3ca, 0.5));
+  var key = new THREE.DirectionalLight(0xffffff, 0.9); key.position.set(30, 60, 40); scene.add(key);
+
+  var camera = new THREE.PerspectiveCamera(28, 1, 1, 2000);
+  var pivot = new THREE.Group(); scene.add(pivot);
+  var robot = new THREE.Group(); pivot.add(robot);
+
+  var meshes = [], groups = {};
+  var camInfo = null;
+  var ACCENT = new THREE.Color(0x0071e3);
+
+  // weicher Bodenschatten
+  var shadow = (function () {
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var g = c.getContext('2d'); var grd = g.createRadialGradient(64, 64, 2, 64, 64, 64);
+    grd.addColorStop(0, 'rgba(0,0,0,0.20)'); grd.addColorStop(0.5, 'rgba(0,0,0,0.08)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(27, 27), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.y = -0.7; m.renderOrder = -1; pivot.add(m);
+    return m;
+  })();
+
+  var MODEL_URL = 'modell/Roboter.glb';
+  new THREE.GLTFLoader().load(MODEL_URL, function (gltf) {
+    var root = gltf.scene;
+    root.scale.setScalar(100); // Meter -> Zentimeter
+    root.updateMatrixWorld(true);
+    var tmpBox = new THREE.Box3(), center = new THREE.Vector3();
+    var all = new THREE.Box3().setFromObject(root);
+    var mid = all.getCenter(new THREE.Vector3());
+    root.position.set(-mid.x, -all.min.y, -mid.z);
+    robot.add(root);
+    root.updateMatrixWorld(true);
+
+    root.traverse(function (o) {
+      if (!o.isMesh) return;
+      var n = (o.name || '').toLowerCase();
+      var part = PARTS.filter(function (p) { return p.match.test(n); })[0];
+      o.material = o.material.clone();
+      o.material.emissive = new THREE.Color(0x000000);
+      tmpBox.setFromObject(o); tmpBox.getCenter(center);
+      var dir = new THREE.Vector3(center.x, 0, center.z);
+      if (dir.length() > 0.5) dir.normalize(); else dir.set(0, 0, 0);
+      var off = part.off || [0, 0, 0];
+      // Explosionsversatz in Weltkoordinaten (cm), umgerechnet in lokale Koordinaten des Objekts
+      var worldOff = new THREE.Vector3(off[0] + dir.x * (part.out || 0), off[1] + (part.up || 0), off[2] + dir.z * (part.out || 0));
+      o.userData = { part: part.id, base: o.position.clone(), off: worldOff.divideScalar(100), hl: 0, op: 1 };
+      meshes.push(o);
+      (groups[part.id] = groups[part.id] || []).push(o);
+    });
+
+    // Kamera-Rahmen für zusammengebaut und zerlegt bestimmen
+    function bounds(e) {
+      setExplode(e); robot.updateMatrixWorld(true);
+      var b = new THREE.Box3(); meshes.forEach(function (m) { b.expandByObject(m); });
+      var s = b.getBoundingSphere(new THREE.Sphere());
+      return { c: s.center.clone(), r: s.radius };
+    }
+    camInfo = { a: bounds(0), b: bounds(1) };
+    setExplode(0);
+    loadingEl.style.opacity = '0';
+    resize();
+    if (reduce) render();
+  }, function (ev) {
+    if (ev.lengthComputable) loadingEl.textContent = 'Modell wird geladen … ' + Math.round(ev.loaded / ev.total * 100) + ' %';
+  }, function () { loadingEl.textContent = 'Modell konnte nicht geladen werden.'; });
+
+  function setExplode(e) {
+    meshes.forEach(function (m) {
+      var u = m.userData;
+      m.position.set(u.base.x + u.off.x * e, u.base.y + u.off.y * e, u.base.z + u.off.z * e);
+    });
+  }
+
+  /* ---------- Größe & Kamera ---------- */
+  var w = 1, h = 1;
+  function resize() {
+    w = stage.clientWidth; h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    render();
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+
+  var tmpC = new THREE.Vector3();
+  function placeCamera() {
+    if (!camInfo) return;
+    var e = smooth(ex);
+    tmpC.copy(camInfo.a.c).lerp(camInfo.b.c, e);
+    var r = camInfo.a.r + (camInfo.b.r - camInfo.a.r) * e;
+    var vfov = camera.fov * Math.PI / 180;
+    var hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+    var dist = r / Math.sin(Math.min(vfov, hfov) / 2) * 0.66;
+    var elev = 0.42;
+    camera.position.set(tmpC.x, tmpC.y + Math.sin(elev) * dist, tmpC.z + Math.cos(elev) * dist);
+    camera.lookAt(tmpC);
+    shadow.material.opacity = 1 - e * 0.5;
+  }
+  function smooth(t) { return t * t * (3 - 2 * t); }
+
+  /* ---------- Scroll steuert die Explosion ---------- */
+  var scrolly = document.getElementById('scrolly');
+  var fill = document.getElementById('progress-fill');
+  var exTarget = 0, ex = 0;
+  function onScroll() {
+    var r = scrolly.getBoundingClientRect();
+    var total = r.height - window.innerHeight;
+    var p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+    exTarget = Math.min(1, Math.max(0, (p - 0.12) / 0.6));
+    fill.style.transform = 'scaleX(' + exTarget.toFixed(3) + ')';
+    if (reduce) { ex = exTarget; setExplode(smooth(ex)); render(); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  /* ---------- Hover, Klick, Drehen ---------- */
+  var yaw = 0.7, pitch = 0, tYaw = yaw, tPitch = 0;
+  var dragging = false, moved = 0, lastX = 0, lastY = 0, lastInteract = -1e9;
+  var hovered = null, selected = null, pendingPick = null;
+  var ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+
+  function pick(clientX, clientY) {
+    if (!meshes.length) return null;
+    var r = canvas.getBoundingClientRect();
+    ptr.x = ((clientX - r.left) / r.width) * 2 - 1;
+    ptr.y = -((clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ptr, camera);
+    var hits = ray.intersectObjects(meshes, false);
+    return hits.length ? hits[0].object.userData.part : null;
+  }
+  function setHover(id, x, y) {
+    hovered = id;
+    canvas.classList.toggle('hover', !!id);
+    if (id) {
+      var r = stage.getBoundingClientRect();
+      tagEl.textContent = byId[id].name;
+      tagEl.style.left = (x - r.left) + 'px'; tagEl.style.top = (y - r.top) + 'px';
+      tagEl.classList.add('show');
+    } else tagEl.classList.remove('show');
+    if (reduce) applyStyles(true);
+  }
+  function select(id) {
+    selected = id;
+    showInfo(id ? byId[id] : null);
+    if (reduce) applyStyles(true);
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  canvas.addEventListener('pointermove', function (e) {
+    if (dragging) {
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+      if (moved > 6) {
+        canvas.classList.add('dragging'); setHover(null);
+        tYaw += dx * 0.008;
+        if (e.pointerType === 'mouse') tPitch = Math.max(-0.35, Math.min(0.5, tPitch + dy * 0.005));
+        lastInteract = performance.now();
+        if (reduce) { yaw = tYaw; pitch = tPitch; render(); }
+      }
+      return;
+    }
+    if (e.pointerType === 'mouse') pendingPick = [e.clientX, e.clientY];
+  });
+  canvas.addEventListener('pointerleave', function () { pendingPick = null; if (!dragging) setHover(null); });
+  function end(e) {
+    if (!dragging) return;
+    dragging = false; canvas.classList.remove('dragging');
+    if (moved <= 6) {
+      var id = pick(e.clientX, e.clientY);
+      select(id && id !== selected ? id : null);
+      lastInteract = performance.now();
+    }
+  }
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', function () { dragging = false; canvas.classList.remove('dragging'); });
+  canvas.addEventListener('keydown', function (e) {
+    var i = ORDER.indexOf(selected);
+    if (e.key === 'ArrowRight') { select(ORDER[(i + 1) % ORDER.length]); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { select(ORDER[(i - 1 + ORDER.length) % ORDER.length]); e.preventDefault(); }
+    else if (e.key === 'Escape') select(null);
+  });
+
+  /* ---------- Weiche Hervorhebung ---------- */
+  function applyStyles(instant) {
+    var k = instant ? 1 : 0.14;
+    meshes.forEach(function (m) {
+      var u = m.userData, id = u.part;
+      var hlT = id === selected ? 1 : (id === hovered ? 0.45 : 0);
+      var opT = !selected || id === selected || id === hovered ? 1 : 0.12;
+      u.hl += (hlT - u.hl) * k; u.op += (opT - u.op) * k;
+      var mat = m.material;
+      mat.emissive.copy(ACCENT).multiplyScalar(u.hl * 0.55);
+      mat.opacity = u.op;
+      var tr = u.op < 0.995;
+      if (mat.transparent !== tr) { mat.transparent = tr; mat.depthWrite = !tr; mat.needsUpdate = true; }
+    });
+  }
+
+  function render() {
+    pivot.rotation.set(pitch, yaw, 0);
+    placeCamera();
+    renderer.render(scene, camera);
+  }
+
+  var visible = true;
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(stage);
+
+  function loop(t) {
+    requestAnimationFrame(loop);
+    if (!visible) return;
+    if (pendingPick && !dragging) {
+      var id = pick(pendingPick[0], pendingPick[1]);
+      setHover(id, pendingPick[0], pendingPick[1]);
+      pendingPick = null;
+    }
+    if (!dragging && !hovered && !selected && t - lastInteract > 2500) tYaw += 0.0022;
+    yaw += (tYaw - yaw) * 0.1;
+    pitch += (tPitch - pitch) * 0.1;
+    ex += (exTarget - ex) * 0.1;
+    setExplode(smooth(ex));
+    applyStyles(false);
+    render();
+  }
+  if (!reduce) requestAnimationFrame(loop);
+})();
+</script>
 </body>
 </html>
