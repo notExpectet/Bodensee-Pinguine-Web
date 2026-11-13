@@ -15,14 +15,15 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--accent); text-decoration: none; transition: opacity .45s cubic-bezier(.22, 1, .36, 1); }
+a:hover { opacity: .68; }
+@media (prefers-reduced-motion: reduce) { a { transition: none; } }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .wrap { max-width: 1080px; width: 100%; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 nav { border-bottom: 1px solid rgba(0,0,0,0.08); padding-top: env(safe-area-inset-top, 0px); }
 nav .wrap { display: flex; align-items: center; height: 48px; }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; color: var(--ink); }
-.brand:hover { text-decoration: none; }
+.brand:hover { opacity: .72; }
 .brand img { width: 20px; height: 24px; display: block; }
 main { flex: 1; display: grid; place-items: center; padding-block: 64px; text-align: center; }
 .logo { width: 88px; height: auto; margin: 0 auto 28px; display: block; }
