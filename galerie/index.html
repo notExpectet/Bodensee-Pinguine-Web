@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Galerie | Bodensee Pinguine</title>
+<meta name="description" content="Die Fotogalerie der Bodensee Pinguine ist noch in Arbeit.">
+<link rel="icon" href="/favicon.png" type="image/png">
+<style>
+:root {
+  --bg: #ffffff; --tint: #f5f5f7; --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --accent: #0071e3;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1080px; width: 100%; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+nav { border-bottom: 1px solid rgba(0,0,0,0.08); padding-top: env(safe-area-inset-top, 0px); }
+nav .wrap { display: flex; align-items: center; height: 48px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; color: var(--ink); }
+.brand:hover { text-decoration: none; }
+.brand img { width: 20px; height: 24px; display: block; }
+main { flex: 1; display: grid; place-items: center; padding-block: 64px; text-align: center; }
+.logo { width: 88px; height: auto; margin: 0 auto 28px; display: block; }
+h1 { margin: 0; font-size: clamp(36px, 6vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; text-wrap: balance; }
+p { margin: 16px auto 0; max-width: 34ch; color: var(--muted); font-size: clamp(18px, 2.2vw, 21px); }
+.back { display: inline-block; margin-top: 28px; font-size: 17px; }
+</style>
+</head>
+<body>
+<nav><div class="wrap"><a class="brand" href="/"><img src="/bilder/logo.svg" alt="" width="20" height="24">Bodensee Pinguine</a></div></nav>
+<main>
+  <div class="wrap">
+    <img class="logo" src="/bilder/logo.svg" alt="" width="88" height="103">
+    <h1>Galerie in Arbeit</h1>
+    <p>Hier sammeln wir bald Fotos von Wettbewerben, Bauabenden und Tests. Unsere Website wird gerade noch aufgebaut.</p>
+    <a class="back" href="/">‹ Zurück zur Startseite</a>
+  </div>
+</main>
+</body>
+</html>
