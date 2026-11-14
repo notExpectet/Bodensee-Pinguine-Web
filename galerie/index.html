@@ -4,43 +4,152 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Galerie | Bodensee Pinguine</title>
-<meta name="description" content="Die Fotogalerie der Bodensee Pinguine ist noch in Arbeit.">
+<meta name="description" content="Fotos der Bodensee Pinguine: Wettbewerbe, Bauabende und Tests.">
 <link rel="icon" href="/favicon.png" type="image/png">
 <style>
 :root {
   --bg: #ffffff; --tint: #f5f5f7; --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --accent: #0071e3;
+  --radius-l: 24px; --ease: cubic-bezier(.22, 1, .36, 1); --dur: .45s;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html, body { height: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
-a { color: var(--accent); text-decoration: none; transition: opacity .45s cubic-bezier(.22, 1, .36, 1); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.47; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; transition: opacity var(--dur) var(--ease); }
 a:hover { opacity: .68; }
-@media (prefers-reduced-motion: reduce) { a { transition: none; } }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .wrap { max-width: 1080px; width: 100%; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-nav { border-bottom: 1px solid rgba(0,0,0,0.08); padding-top: env(safe-area-inset-top, 0px); }
-nav .wrap { display: flex; align-items: center; height: 48px; }
+nav { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,0.8); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); padding-top: env(safe-area-inset-top, 0px); }
+nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 48px; }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; color: var(--ink); }
 .brand:hover { opacity: .72; }
 .brand img { width: 20px; height: 24px; display: block; }
-main { flex: 1; display: grid; place-items: center; padding-block: 64px; text-align: center; }
-.logo { width: 88px; height: auto; margin: 0 auto 28px; display: block; }
-h1 { margin: 0; font-size: clamp(36px, 6vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; text-wrap: balance; }
-p { margin: 16px auto 0; max-width: 34ch; color: var(--muted); font-size: clamp(18px, 2.2vw, 21px); }
-.back { display: inline-block; margin-top: 28px; font-size: 17px; }
+nav .back { font-size: 13px; }
+main { padding-block: 56px 96px; }
+h1 { margin: 0 0 40px; text-align: center; font-size: clamp(36px, 6vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
+
+.gal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 20px; min-height: 160px; }
+.gal-grid.n1 { grid-template-columns: minmax(0, 1fr); max-width: 760px; margin: 0 auto; }
+.gal-grid.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gal-item { margin: 0; min-width: 0; }
+.gal-item button { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; border-radius: var(--radius-l); overflow: hidden; background: var(--tint); aspect-ratio: 3 / 2; max-width: 100%; }
+.gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s var(--ease), opacity .8s var(--ease); }
+.gal-item img.loading { opacity: 0; }
+.gal-item button:hover img, .gal-item button:focus-visible img { transform: scale(1.03); }
+.gal-item figcaption { margin-top: 12px; font-size: 17px; font-weight: 600; text-align: center; }
+.empty { text-align: center; color: var(--muted); grid-column: 1 / -1; }
+@media (max-width: 720px) { .gal-grid, .gal-grid.n2 { grid-template-columns: minmax(0, 1fr); gap: 28px; } .gal-item button { border-radius: 18px; } }
+
+/* Großansicht */
+dialog.lb { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(255,255,255,0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+dialog.lb[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; animation: fade .45s var(--ease); }
+dialog.lb.closing { animation: fade-out .3s var(--ease) forwards; }
+dialog.lb::backdrop { background: transparent; }
+.lb-top { display: flex; justify-content: flex-end; padding: max(12px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 0 16px; }
+.lb-stage { position: relative; display: grid; place-items: center; min-height: 0; padding: 8px 72px; }
+.lb-stage img { max-width: 100%; max-height: calc(100vh - 170px); max-height: calc(100svh - 170px); width: auto; height: auto; object-fit: contain; border-radius: 18px; box-shadow: 0 24px 64px rgba(0,0,0,0.16); transition: opacity .35s var(--ease), transform .45s var(--ease); }
+.lb-stage img.out { opacity: 0; transform: scale(.985); }
+.lb-cap { text-align: center; font-size: 19px; font-weight: 600; padding: 16px 16px max(24px, env(safe-area-inset-bottom, 0px)); }
+.lb button { font: inherit; border: 0; cursor: pointer; background: rgba(0,0,0,0.06); color: var(--ink); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; transition: background-color var(--dur) var(--ease), transform .2s var(--ease); }
+.lb button:hover { background: rgba(0,0,0,0.1); }
+.lb button:active { transform: scale(.94); }
+.lb button svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lb-prev, .lb-next { position: absolute; top: 50%; transform: translateY(-50%); }
+.lb-prev { left: max(16px, env(safe-area-inset-left, 0px)); }
+.lb-next { right: max(16px, env(safe-area-inset-right, 0px)); }
+.lb-prev:active, .lb-next:active { transform: translateY(-50%) scale(.94); }
+@media (max-width: 720px) { .lb-stage { padding: 8px 16px; } .lb-prev, .lb-next { top: auto; bottom: 8px; transform: none; } .lb-stage { padding-bottom: 60px; } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<nav><div class="wrap"><a class="brand" href="/"><img src="/bilder/logo.svg" alt="" width="20" height="24">Bodensee Pinguine</a></div></nav>
+<nav><div class="wrap">
+  <a class="brand" href="/"><img src="/bilder/logo.svg" alt="" width="20" height="24">Bodensee Pinguine</a>
+  <a class="back" href="/">‹ Startseite</a>
+</div></nav>
+
 <main>
   <div class="wrap">
-    <img class="logo" src="/bilder/logo.svg" alt="" width="88" height="103">
-    <h1>Galerie in Arbeit</h1>
-    <p>Hier sammeln wir bald Fotos von Wettbewerben, Bauabenden und Tests. Unsere Website wird gerade noch aufgebaut.</p>
-    <a class="back" href="/">‹ Zurück zur Startseite</a>
+    <h1>Galerie</h1>
+    <!-- Die Bilder kommen automatisch aus dem Ordner galerie/bilder (siehe LIESMICH.md dort) -->
+    <div class="gal-grid" id="grid" aria-live="polite"></div>
   </div>
 </main>
+
+<dialog class="lb" id="lb" aria-label="Großansicht">
+  <div class="lb-top"><button type="button" id="lb-close" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="lb-stage">
+    <img id="lb-img" alt="">
+    <button type="button" class="lb-prev" id="lb-prev" aria-label="Vorheriges Bild"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button type="button" class="lb-next" id="lb-next" aria-label="Nächstes Bild"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <div class="lb-cap" id="lb-cap"></div>
+</dialog>
+
+<script src="/galerie/galerie.js"></script>
+<script>
+(function () {
+  var grid = document.getElementById('grid');
+  var lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img'), lbCap = document.getElementById('lb-cap');
+  var items = [], idx = 0;
+
+  function show(i, instant) {
+    idx = (i + items.length) % items.length;
+    var it = items[idx];
+    var apply = function () {
+      lbImg.src = it.src; lbImg.alt = it.caption; lbCap.textContent = it.caption;
+      lbImg.onload = function () { lbImg.classList.remove('out'); };
+      if (lbImg.complete) lbImg.classList.remove('out');
+      history.replaceState(null, '', '#' + (idx + 1));
+    };
+    if (instant) { apply(); return; }
+    lbImg.classList.add('out'); setTimeout(apply, 200);
+  }
+  function open(i) {
+    show(i, true);
+    if (lb.showModal) lb.showModal(); else lb.setAttribute('open', '');
+  }
+  function close() {
+    if (!lb.open) return;
+    lb.classList.add('closing');
+    setTimeout(function () { lb.classList.remove('closing'); if (lb.close) lb.close(); else lb.removeAttribute('open'); history.replaceState(null, '', location.pathname); }, 280);
+  }
+  document.getElementById('lb-close').addEventListener('click', close);
+  document.getElementById('lb-prev').addEventListener('click', function () { show(idx - 1); });
+  document.getElementById('lb-next').addEventListener('click', function () { show(idx + 1); });
+  lb.addEventListener('cancel', function (e) { e.preventDefault(); close(); });
+  lb.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') show(idx - 1);
+    else if (e.key === 'ArrowRight') show(idx + 1);
+  });
+  // Wischen auf dem Handy
+  var sx = null;
+  lb.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', function (e) {
+    if (sx === null) return; var dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+  });
+
+  loadGallery().then(function (list) {
+    items = list;
+    if (!items.length) { grid.innerHTML = '<p class="empty">Noch keine Fotos.</p>'; return; }
+    grid.className = 'gal-grid n' + Math.min(items.length, 3);
+    items.forEach(function (it, i) {
+      var fig = document.createElement('figure'); fig.className = 'gal-item';
+      var btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('aria-label', it.caption + ', groß anzeigen');
+      var img = new Image(); img.alt = ''; img.decoding = 'async'; img.loading = i < 6 ? 'eager' : 'lazy'; img.className = 'loading';
+      img.onload = function () { img.classList.remove('loading'); };
+      img.src = it.src;
+      btn.addEventListener('click', function () { open(i); });
+      var cap = document.createElement('figcaption'); cap.textContent = it.caption;
+      btn.appendChild(img); fig.appendChild(btn); fig.appendChild(cap); grid.appendChild(fig);
+    });
+    var n = parseInt(location.hash.slice(1), 10);
+    if (n >= 1 && n <= items.length) open(n - 1);
+  });
+})();
+</script>
 </body>
 </html>

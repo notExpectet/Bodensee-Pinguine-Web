@@ -57,8 +57,11 @@ nav.top ul a:hover { opacity: 1; }
 #team { padding-block: 24px 72px; }
 .hero { position: relative; display: block; margin: 0; border-radius: var(--radius-l); overflow: hidden; background: var(--tint); aspect-ratio: 16 / 9; max-width: 100%; isolation: isolate; }
 .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.32), rgba(0,0,0,0) 40%); opacity: 0; transition: opacity .8s var(--ease); pointer-events: none; }
-.hero img.photo { transition: transform 1.4s var(--ease); }
-.hero-cta { position: absolute; left: 50%; bottom: 24px; z-index: 1; transform: translate(-50%, 8px); padding: 10px 20px; border-radius: 980px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--ink); font-size: 15px; font-weight: 500; opacity: 0; transition: opacity .6s var(--ease), transform .6s var(--ease); white-space: nowrap; }
+.hero img.photo { position: absolute; inset: 0; transition: transform 1.4s var(--ease), opacity 1.4s var(--ease); }
+.hero img.slide { opacity: 0; }
+.hero img.slide.on { opacity: 1; }
+.hero::after { z-index: 2; }
+.hero-cta { position: absolute; left: 50%; bottom: 24px; z-index: 3; transform: translate(-50%, 8px); padding: 10px 20px; border-radius: 980px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--ink); font-size: 15px; font-weight: 500; opacity: 0; transition: opacity .6s var(--ease), transform .6s var(--ease); white-space: nowrap; }
 .hero:hover { opacity: 1; }
 .hero:hover img.photo, .hero:focus-visible img.photo { transform: scale(1.02); }
 .hero:hover::after, .hero:focus-visible::after { opacity: 1; }
@@ -109,10 +112,18 @@ nav.top ul a:hover { opacity: 1; }
 }
 
 /* Galerie */
-.gallery-note { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 56px 24px; }
-.gallery-note img { width: 56px; height: auto; margin-bottom: 8px; }
-.gallery-note h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; }
-.gallery-note p { margin: 0; color: var(--muted); max-width: 36ch; }
+.gal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; min-height: 120px; }
+.gal-grid.n1 { grid-template-columns: minmax(0, 1fr); }
+.gal-grid.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gal-item { margin: 0; min-width: 0; }
+.gal-item a { display: block; border-radius: var(--radius-l); overflow: hidden; background: var(--tint); aspect-ratio: 3 / 2; max-width: 100%; }
+.gal-item a:hover { opacity: 1; }
+.gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s var(--ease), opacity .8s var(--ease); }
+.gal-item img.loading { opacity: 0; }
+.gal-item a:hover img, .gal-item a:focus-visible img { transform: scale(1.03); }
+.gal-item figcaption { margin-top: 12px; font-size: 17px; font-weight: 600; text-align: center; }
+.gal-more { display: flex; justify-content: center; margin-top: 32px; font-size: 19px; }
+@media (max-width: 720px) { .gal-grid, .gal-grid.n2 { grid-template-columns: minmax(0, 1fr); gap: 28px; } .gal-item a { border-radius: 18px; } }
 
 /* Sponsoren */
 .sponsors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
@@ -207,8 +218,8 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 <!-- ============ TEAM ============ -->
 <section id="team">
   <div class="wrap">
-    <a class="hero" href="galerie/" aria-label="Zur Galerie">
-      <img class="photo" src="bilder/team.jpg" srcset="bilder/team-1200.jpg 1200w, bilder/team.jpg 2000w" sizes="(max-width: 1112px) 100vw, 1080px" width="2000" height="1270" alt="Unser Team am Spielfeld bei einem RoboCup-Junior-Wettbewerb" fetchpriority="high">
+    <a class="hero" href="galerie/" aria-label="Zur Galerie" data-first="Unser Team am Spielfeld.jpg">
+      <img class="photo slide on" src="bilder/team.jpg" srcset="bilder/team-1200.jpg 1200w, bilder/team.jpg 2000w" sizes="(max-width: 1112px) 100vw, 1080px" width="2000" height="1270" alt="Unser Team am Spielfeld bei einem RoboCup-Junior-Wettbewerb" fetchpriority="high">
       <span class="hero-cta" aria-hidden="true">Zur Galerie ›</span>
     </a>
     <div class="hero-title">
@@ -252,12 +263,9 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
 <section id="galerie" style="padding-top:32px">
   <div class="wrap">
     <h2 class="h-l section-title">Galerie</h2>
-    <!-- FOTOS: Sobald es Fotos gibt, diese Fläche durch die Galerie ersetzen -->
-    <div class="panel gallery-note">
-      <img src="bilder/logo.svg" alt="" width="56" height="66">
-      <h3>Galerie in Arbeit</h3>
-      <p>Hier sammeln wir bald Fotos von Wettbewerben, Bauabenden und Tests.</p>
-    </div>
+    <!-- FOTOS: Bilder kommen automatisch aus dem Ordner galerie/bilder (siehe LIESMICH.md dort) -->
+    <div class="gal-grid" id="gal-preview" aria-live="polite"></div>
+    <div class="gal-more"><a href="galerie/">Ganze Galerie ansehen ›</a></div>
   </div>
 </section>
 
@@ -343,6 +351,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
   </form>
 </dialog>
 
+<script src="galerie/galerie.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
@@ -382,6 +391,45 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
     });
   });
   if (location.hash === '#anmelden') openLogin();
+
+  /* ---------- Galerie: Vorschau und wechselnder Aufmacher ---------- */
+  if (window.loadGallery) loadGallery().then(function (items) {
+    // Vorschau: die ersten drei Bilder
+    var grid = document.getElementById('gal-preview');
+    var show = items.slice(0, 3);
+    grid.className = 'gal-grid n' + Math.min(show.length, 3);
+    show.forEach(function (it, i) {
+      var fig = document.createElement('figure'); fig.className = 'gal-item';
+      var a = document.createElement('a'); a.href = 'galerie/#' + (i + 1);
+      var img = new Image(); img.alt = it.caption; img.loading = 'lazy'; img.decoding = 'async'; img.className = 'loading';
+      img.onload = function () { img.classList.remove('loading'); };
+      img.src = it.src;
+      var cap = document.createElement('figcaption'); cap.textContent = it.caption;
+      a.appendChild(img); fig.appendChild(a); fig.appendChild(cap); grid.appendChild(fig);
+    });
+
+    // Aufmacher: Bilder der Galerie weich überblenden
+    var hero = document.querySelector('.hero'), cta = hero.querySelector('.hero-cta');
+    var slides = [hero.querySelector('img.photo')];
+    items.forEach(function (it) {
+      if (it.name === hero.dataset.first) return;
+      var im = new Image(); im.className = 'photo slide'; im.alt = ''; im.decoding = 'async';
+      im.style.objectPosition = '50% 35%';
+      im.src = it.src; hero.insertBefore(im, cta); slides.push(im);
+    });
+    if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cur = 0, paused = false;
+    hero.addEventListener('mouseenter', function () { paused = true; });
+    hero.addEventListener('mouseleave', function () { paused = false; });
+    setInterval(function () {
+      if (paused || document.hidden) return;
+      var nextI = (cur + 1) % slides.length, a = slides[cur], b = slides[nextI];
+      if (!b.complete || !b.naturalWidth) return;
+      a.style.zIndex = 0; b.style.zIndex = 1; b.classList.add('on');
+      setTimeout(function () { a.classList.remove('on'); }, 1500);
+      cur = nextI;
+    }, 6000);
+  });
 
   /* ---------- Spender-Feed ---------- */
   (function () {
