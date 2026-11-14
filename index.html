@@ -119,8 +119,29 @@ nav.top ul a:hover { opacity: 1; }
 .sponsor { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 40px; min-width: 0; text-align: center; align-items: center; }
 .sponsor h3 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 700; }
 .sponsor p { margin: 0; color: var(--muted); }
-.sponsor .amount { font-size: clamp(40px, 6vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
-@media (max-width: 720px) { .sponsors { grid-template-columns: minmax(0, 1fr); } .sponsor { padding: 32px 24px; } }
+.feed { padding: 28px 32px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.feed-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.feed-head h3 { font-size: 19px; font-weight: 600; }
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #e30000; }
+.live i { position: relative; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.live i::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: currentColor; animation: ping 1.8s var(--ease) infinite; }
+@keyframes ping { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(2.8); opacity: 0; } }
+.feed ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.feed li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+.feed li:first-child { border-top: 0; }
+.feed .rank { font-size: 15px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.feed .who { font-size: 17px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed .sum { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.feed li.top .who, .feed li.top .sum { font-size: 22px; }
+.feed li.top { animation: flash 2.4s var(--ease) .4s; border-radius: 12px; }
+@keyframes flash { 0% { background: transparent; } 20% { background: rgba(0,113,227,0.10); } 100% { background: transparent; } }
+.feed li.free .who, .feed li.free .sum { color: var(--muted); font-weight: 400; }
+.feed-foot { margin-top: 8px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.donate-row { display: flex; justify-content: center; margin-top: 32px; }
+.donate { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 28px; border-radius: 980px; background: var(--accent); color: #fff; font-size: 17px; font-weight: 500; transition: opacity var(--dur) var(--ease), transform .2s var(--ease); }
+.donate:hover { opacity: .85; }
+.donate:active { transform: scale(.97); }
+@media (max-width: 720px) { .sponsors { grid-template-columns: minmax(0, 1fr); } .sponsor { padding: 32px 24px; } .feed { padding: 24px 20px; } }
 
 /* Kontakt */
 .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
@@ -250,10 +271,22 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
         <p>Danke an alle, die die Roboter-AG Markdorf unterstützen.</p>
         <a href="https://markdorf-robotics.de" target="_blank" rel="noopener">Zur Roboter-AG ›</a>
       </div>
-      <div class="panel sponsor">
-        <span class="amount">10 ct</span>
-        <h3>Hendrik Stör</h3>
+      <!-- TOP-SPENDER: neue Spenden als <li> eintragen, sortiert nach Betrag -->
+      <div class="panel feed" aria-label="Top-Spender">
+        <div class="feed-head">
+          <h3>Top-Spender</h3>
+          <span class="live"><i aria-hidden="true"></i>Live</span>
+        </div>
+        <ol>
+          <li class="top"><span class="rank">1</span><span class="who">Hendrik Stör</span><span class="sum" data-cents="20">20 ct</span></li>
+          <li class="free"><span class="rank">2</span><span class="who">Platz frei</span><span class="sum">–</span></li>
+          <li class="free"><span class="rank">3</span><span class="who">Platz frei</span><span class="sum">–</span></li>
+        </ol>
+        <p class="feed-foot">Stand: <span id="feed-time">jetzt</span></p>
       </div>
+    </div>
+    <div class="donate-row">
+      <a class="donate" href="/spenden/">Jetzt spenden</a>
     </div>
   </div>
 </section>
@@ -349,6 +382,30 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
     });
   });
   if (location.hash === '#anmelden') openLogin();
+
+  /* ---------- Spender-Feed ---------- */
+  (function () {
+    var t = document.getElementById('feed-time');
+    var fmt = function () { var d = new Date(); t.textContent = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr'; };
+    fmt(); setInterval(fmt, 1000);
+    // Beträge hochzählen, sobald der Feed sichtbar wird
+    var sums = [].slice.call(document.querySelectorAll('.feed .sum[data-cents]'));
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    sums.forEach(function (el) { el.textContent = '0 ct'; });
+    var io = new IntersectionObserver(function (en) {
+      if (!en[0].isIntersecting) return; io.disconnect();
+      sums.forEach(function (el) {
+        var target = +el.dataset.cents, t0 = performance.now(), dur = 1400;
+        (function step(now) {
+          var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * e) + ' ct';
+          if (p < 1) requestAnimationFrame(step);
+        })(t0);
+      });
+    }, { threshold: 0.5 });
+    io.observe(document.querySelector('.feed'));
+  })();
 
   /* ---------- Kopieren ---------- */
   var copyBtn = document.getElementById('copy-mail');
